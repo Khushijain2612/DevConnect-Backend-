@@ -1,210 +1,118 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { CreatePost } from '../components/CreatePost';
 import { PostCard, Post } from '../components/PostCard';
-import { ProfileCard, SuggestedUser } from '../components/ProfileCard';
 
 export function FeedPage() {
   const navigate = useNavigate();
 
-  const [currentUser] = useState({
-    id: '1',
-    name: 'Alex Johnson',
-    username: 'alexj',
-    avatar: 'https://images.unsplash.com/photo-1737575655055-e3967cbefd03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBkZXZlbG9wZXIlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NzE1ODE3MzF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral'
-  });
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [posts, setPosts] = useState<Post[]>([
-    {
-      id: '1',
-      author: {
-        name: 'Sarah Chen',
-        avatar: 'https://images.unsplash.com/photo-1580894908361-967195033215?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBzb2Z0d2FyZSUyMGVuZ2luZWVyfGVufDF8fHx8MTc3MTY1OTg5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-        username: 'sarachen'
-      },
-      content: 'Just deployed my first full-stack app using React and Node.js! The feeling of seeing everything come together is incredible. Any tips for optimizing performance? 🚀',
-      timestamp: '2h ago',
-      likes: 24,
-      isLiked: false,
-      comments: [
-        { id: 'c1', author: 'Mike', content: 'Congrats! Try implementing code splitting with React.lazy()' },
-        { id: 'c2', author: 'Emma', content: 'Great work! Look into caching strategies too' }
-      ]
-    },
-    {
-      id: '2',
-      author: {
-        name: 'Marcus Williams',
-        avatar: 'https://images.unsplash.com/photo-1710770563074-6d9cc0d3e338?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwZGV2ZWxvcGVyJTIwY29kaW5nfGVufDF8fHx8MTc3MTY2ODM3NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-        username: 'marcusw'
-      },
-      content: 'Working on a new AI-powered code review tool. It analyzes your pull requests and suggests improvements based on best practices. Beta testers needed! Drop a comment if interested.',
-      timestamp: '5h ago',
-      likes: 42,
-      isLiked: true,
-      comments: [
-        { id: 'c3', author: 'DevGirl', content: "I'd love to test this out!" }
-      ]
-    },
-    {
-      id: '3',
-      author: {
-        name: 'Emily Rodriguez',
-        avatar: 'https://images.unsplash.com/photo-1582138825658-fb952c08b282?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9ncmFtbWVyJTIwd29ya2luZyUyMGxhcHRvcHxlbnwxfHx8fDE3NzE2NjgzNzN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-        username: 'emilydev'
-      },
-      content: 'Hot take: TypeScript has made me a better JavaScript developer. The type safety catches so many bugs before they reach production. What are your thoughts?',
-      timestamp: '1d ago',
-      likes: 67,
-      isLiked: false,
-      comments: []
-    },
-    {
-      id: '4',
-      author: {
-        name: 'David Kim',
-        avatar: 'https://images.unsplash.com/photo-1766066014773-0074bf4911de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGRldmVsb3BlciUyMHNtaWxpbmd8ZW58MXx8fHwxNzcxNjY4Mzc3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-        username: 'davidk'
-      },
-      content: 'Finally cracked a LeetCode hard problem that I\'ve been stuck on for days! The key was recognizing it as a dynamic programming problem. Persistence pays off! 💪',
-      timestamp: '1d ago',
-      likes: 31,
-      isLiked: false,
-      comments: [
-        { id: 'c4', author: 'CodeMaster', content: 'Which problem was it?' }
-      ]
-    }
-  ]);
+  useEffect(() => {
+    fetchFeed();
+  }, []);
 
-  const [suggestedUsers, setSuggestedUsers] = useState<SuggestedUser[]>([
-    {
-      id: '2',
-      name: 'Sarah Chen',
-      username: 'sarachen',
-      avatar: 'https://images.unsplash.com/photo-1580894908361-967195033215?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBzb2Z0d2FyZSUyMGVuZ2luZWVyfGVufDF8fHx8MTc3MTY1OTg5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      bio: 'Full-stack developer | React enthusiast | Open source contributor',
-      isFollowing: false
-    },
-    {
-      id: '3',
-      name: 'Marcus Williams',
-      username: 'marcusw',
-      avatar: 'https://images.unsplash.com/photo-1710770563074-6d9cc0d3e338?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwZGV2ZWxvcGVyJTIwY29kaW5nfGVufDF8fHx8MTc3MTY2ODM3NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      bio: 'AI/ML Engineer | Building the future with code',
-      isFollowing: false
-    },
-    {
-      id: '4',
-      name: 'Emily Rodriguez',
-      username: 'emilydev',
-      avatar: 'https://images.unsplash.com/photo-1582138825658-fb952c08b282?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9ncmFtbWVyJTIwd29ya2luZyUyMGxhcHRvcHxlbnwxfHx8fDE3NzE2NjgzNzN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      bio: 'TypeScript advocate | Senior Frontend Engineer',
-      isFollowing: true
+  const fetchFeed = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      // 🔹 Get logged in user
+      const userRes = await fetch("http://localhost:5000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const userData = await userRes.json();
+      setCurrentUser(userData);
+
+      // 🔹 Get all posts
+      const postRes = await fetch("http://localhost:5000/api/posts", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const postData = await postRes.json();
+      setPosts(postData);
+
+    } catch (error) {
+      console.error("Feed load error");
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate('/');
   };
 
-  const handleCreatePost = (content: string) => {
-    const newPost: Post = {
-      id: Date.now().toString(),
-      author: {
-        name: currentUser.name,
-        avatar: currentUser.avatar,
-        username: currentUser.username
+  // ✅ CREATE POST
+  const handleCreatePost = async (content: string) => {
+    const token = localStorage.getItem("token");
+
+    await fetch("http://localhost:5000/api/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
-      content,
-      timestamp: 'Just now',
-      likes: 0,
-      isLiked: false,
-      comments: []
-    };
-    setPosts([newPost, ...posts]);
+      body: JSON.stringify({ content })
+    });
+
+    fetchFeed();
   };
 
-  const handleLike = (postId: string) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-          isLiked: !post.isLiked
-        };
-      }
-      return post;
-    }));
+  // ✅ LIKE
+  const handleLike = async (postId: string) => {
+    const token = localStorage.getItem("token");
+
+    await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    fetchFeed();
   };
 
-  const handleComment = (postId: string, comment: string) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: [
-            ...post.comments,
-            {
-              id: Date.now().toString(),
-              author: currentUser.name,
-              content: comment
-            }
-          ]
-        };
-      }
-      return post;
-    }));
+  // ✅ COMMENT
+  const handleComment = async (postId: string, comment: string) => {
+    const token = localStorage.getItem("token");
+
+    await fetch(`http://localhost:5000/api/posts/${postId}/comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ text: comment })
+    });
+
+    fetchFeed();
   };
 
-  const handleFollow = (userId: string) => {
-    setSuggestedUsers(suggestedUsers.map(user => {
-      if (user.id === userId) {
-        return { ...user, isFollowing: !user.isFollowing };
-      }
-      return user;
-    }));
-  };
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!currentUser) return <div className="p-6">No user found</div>;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar currentUser={currentUser} onLogout={handleLogout} />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Feed - Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            <CreatePost currentUser={currentUser} onCreatePost={handleCreatePost} />
-            
-            {posts.map(post => (
-              <PostCard
-                key={post.id}
-                post={post}
-                onLike={handleLike}
-                onComment={handleComment}
-              />
-            ))}
-          </div>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="space-y-6">
 
-          {/* Sidebar - Right Column */}
-          <div className="hidden lg:block">
-            <div className="sticky top-24">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Suggested Developers
-                </h2>
-                <div className="space-y-4">
-                  {suggestedUsers.map(user => (
-                    <ProfileCard
-                      key={user.id}
-                      user={user}
-                      onFollow={handleFollow}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <CreatePost
+            currentUser={currentUser}
+            onCreatePost={handleCreatePost}
+          />
+
+          {posts.map(post => (
+            <PostCard
+              key={post._id}
+              post={post}
+              onLike={handleLike}
+              onComment={handleComment}
+            />
+          ))}
+
         </div>
       </div>
     </div>

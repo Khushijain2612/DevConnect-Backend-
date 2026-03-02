@@ -2,21 +2,22 @@ import React, { useState } from 'react';
 import { Heart, MessageCircle, Send } from 'lucide-react';
 
 export interface Post {
-  id: string;
-  author: {
-    name: string;
-    avatar: string;
-    username: string;
-  };
+  _id: string;
   content: string;
-  timestamp: string;
-  likes: number;
-  comments: Array<{
-    id: string;
-    author: string;
-    content: string;
-  }>;
-  isLiked?: boolean;
+  user: {
+    _id: string;
+    name: string;
+    profilePic?: string;
+  };
+  likes: string[];
+  comments: {
+    _id: string;
+    user: {
+      name: string;
+    };
+    text: string;
+  }[];
+  createdAt: string;
 }
 
 interface PostCardProps {
@@ -32,57 +33,72 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (commentText.trim()) {
-      onComment(post.id, commentText);
+      onComment(post._id, commentText);
       setCommentText('');
     }
   };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      
       {/* Post Header */}
       <div className="flex items-start space-x-3 mb-4">
         <img
-          src={post.author.avatar}
-          alt={post.author.name}
+          src={post.user?.profilePic || "https://via.placeholder.com/40"}
+          alt={post.user?.name}
           className="w-12 h-12 rounded-full object-cover"
         />
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900">{post.author.name}</h3>
-          <p className="text-sm text-gray-500">@{post.author.username} · {post.timestamp}</p>
+          <h3 className="font-semibold text-gray-900">
+            {post.user?.name}
+          </h3>
+          <p className="text-sm text-gray-500">
+            {new Date(post.createdAt).toLocaleString()}
+          </p>
         </div>
       </div>
 
       {/* Post Content */}
-      <p className="text-gray-800 mb-4 leading-relaxed">{post.content}</p>
+      <p className="text-gray-800 mb-4 leading-relaxed">
+        {post.content}
+      </p>
 
       {/* Post Actions */}
       <div className="flex items-center space-x-6 pt-3 border-t border-gray-100">
         <button
-          onClick={() => onLike(post.id)}
-          className={`flex items-center space-x-2 transition-colors ${
-            post.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
-          }`}
+          onClick={() => onLike(post._id)}
+          className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors"
         >
-          <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
-          <span className="text-sm font-medium">{post.likes}</span>
+          <Heart className="w-5 h-5" />
+          <span className="text-sm font-medium">
+            {post.likes.length}
+          </span>
         </button>
+
         <button
           onClick={() => setShowComments(!showComments)}
           className="flex items-center space-x-2 text-gray-500 hover:text-indigo-600 transition-colors"
         >
           <MessageCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">{post.comments.length}</span>
+          <span className="text-sm font-medium">
+            {post.comments.length}
+          </span>
         </button>
       </div>
 
       {/* Comments Section */}
       {showComments && (
         <div className="mt-4 pt-4 border-t border-gray-100">
+
           {post.comments.map((comment) => (
-            <div key={comment.id} className="mb-3 last:mb-0">
+            <div key={comment._id} className="mb-3 last:mb-0">
               <p className="text-sm">
-                <span className="font-semibold text-gray-900">{comment.author}</span>
-                <span className="text-gray-700 ml-2">{comment.content}</span>
+                <span className="font-semibold text-gray-900">
+                  {comment.user?.name}
+                </span>
+                <span className="text-gray-700 ml-2">
+                  {comment.text}
+                </span>
               </p>
             </div>
           ))}
@@ -104,6 +120,7 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
               <Send className="w-4 h-4" />
             </button>
           </form>
+
         </div>
       )}
     </div>
