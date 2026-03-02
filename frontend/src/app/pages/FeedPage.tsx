@@ -20,14 +20,14 @@ export function FeedPage() {
       const token = localStorage.getItem("token");
 
       // 🔹 Get logged in user
-      const userRes = await fetch("http://localhost:5000/api/users/me", {
+      const userRes = await fetch("https://devconnect-backend-1-jm73.onrender.com/api/users/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const userData = await userRes.json();
       setCurrentUser(userData);
 
       // 🔹 Get all posts
-      const postRes = await fetch("http://localhost:5000/api/posts", {
+      const postRes = await fetch("https://devconnect-backend-1-jm73.onrender.com/api/posts", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const postData = await postRes.json();
@@ -49,7 +49,7 @@ export function FeedPage() {
   const handleCreatePost = async (content: string) => {
     const token = localStorage.getItem("token");
 
-    await fetch("http://localhost:5000/api/posts", {
+    await fetch("https://devconnect-backend-1-jm73.onrender.com/api/posts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export function FeedPage() {
   const handleLike = async (postId: string) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+    await fetch(`https://devconnect-backend-1-jm73.onrender.com/api/posts/${postId}/like`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -77,7 +77,7 @@ export function FeedPage() {
   const handleComment = async (postId: string, comment: string) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/posts/${postId}/comment`, {
+    await fetch(`https://devconnect-backend-1-jm73.onrender.com/api/posts/${postId}/comment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

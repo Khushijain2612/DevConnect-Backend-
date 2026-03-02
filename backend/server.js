@@ -22,3 +22,11 @@ app.use("/api/auth",authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+const cors = require("cors");
+
+app.use(cors({
+  origin: "*"
+}));

@@ -53,7 +53,7 @@ export function LoginPage() {
       setServerError(''); // 🔴 clear old error
 
       const response = await fetch(
-        'http://localhost:5000/api/auth/login', 
+        'https://devconnect-backend-1-jm73.onrender.com/api/auth/login', 
         // 🔴 CHANGE THIS if your backend port or route is different
         {
           method: 'POST', // 🔴 Backend expects POST

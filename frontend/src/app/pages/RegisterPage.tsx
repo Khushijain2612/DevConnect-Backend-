@@ -72,7 +72,7 @@ export function RegisterPage() {
       setServerError('');
 
       const response = await fetch(
-        'http://localhost:5000/api/auth/register', 
+        'https://devconnect-backend-1-jm73.onrender.com/api/auth/register', 
         // 🔴 CHANGE THIS URL IF:
         // - Your backend runs on different port
         // - Your route is different (e.g. /api/users/register)

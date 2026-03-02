@@ -21,7 +21,7 @@ export function ProfilePage() {
       const token = localStorage.getItem("token");
 
       // 🔹 Get logged in user
-      const userRes = await fetch("http://localhost:5000/api/users/me", {
+      const userRes = await fetch("https://devconnect-backend-1-jm73.onrender.com/api/users/me", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -32,7 +32,7 @@ export function ProfilePage() {
 
       // 🔹 Get user posts
       const postRes = await fetch(
-        `http://localhost:5000/api/posts/user/${userData._id}`,
+        `https://devconnect-backend-1-jm73.onrender.com/api/posts/user/${userData._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -58,7 +58,7 @@ export function ProfilePage() {
   const handleLike = async (postId: string) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+    await fetch(`https://devconnect-backend-1-jm73.onrender.com/api/posts/${postId}/like`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`
@@ -71,7 +71,7 @@ export function ProfilePage() {
   const handleComment = async (postId: string, comment: string) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/posts/${postId}/comment`, {
+    await fetch(`https://devconnect-backend-1-jm73.onrender.com/api/posts/${postId}/comment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
